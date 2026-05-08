@@ -14,20 +14,6 @@
             --correct-green: #2ecc71;
         }
         
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            /* تمت العودة للصورة القديمة هنا */
-            background-image: url('https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg');
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 450px;
-            opacity: 0.12;
-            z-index: -1;
-            pointer-events: none;
-        }
-
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: #f7f9fb; 
@@ -36,6 +22,39 @@
             flex-direction: column; 
             height: 100vh; 
             color: var(--text-dark);
+        }
+
+        /* صورة الخلفية العامة */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 450px;
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* تعديل الصفحة الأولى لتكون بتدرج أخضر */
+        #name-screen { 
+            position: fixed; 
+            inset: 0; 
+            background: linear-gradient(to bottom, var(--primary-color) 0%, #ffffff 70%); 
+            z-index: 2000; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+            padding: 20px;
+        }
+        
+        #name-input { 
+            padding: 15px; width: 100%; max-width: 320px; font-size: 18px; 
+            border: 2px solid var(--primary-color); border-radius: 10px; margin-bottom: 20px; text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         header { 
@@ -131,16 +150,6 @@
         .option:hover { background-color: #f0fafa; }
         .option.selected { border: 2px solid var(--primary-color); background-color: #f0fafa; }
 
-        #name-screen { 
-            position: fixed; inset: 0; background: #ffffff; z-index: 2000; 
-            display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 20px;
-        }
-        
-        #name-input { 
-            padding: 15px; width: 100%; max-width: 320px; font-size: 18px; 
-            border: 2px solid var(--primary-color); border-radius: 10px; margin-bottom: 20px; text-align: center;
-        }
-
         .btn { padding: 12px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
         .btn-save { background-color: var(--primary-color); color: white; }
 
@@ -162,8 +171,8 @@
 <body>
 
 <div id="name-screen">
-    <img src="https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg" alt="Logo" style="width: 130px; height: 130px; object-fit: cover; margin-bottom: 20px; border-radius: 15px;">
-    <h2 style="color: var(--primary-color); margin: 0 0 10px 0;">نظام محاكاة اختبار نمر</h2>
+    <img src="https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg" alt="Logo" style="width: 130px; height: 130px; object-fit: cover; margin-bottom: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+    <h2 style="color: var(--text-dark); margin: 0 0 10px 0;">نظام محاكاة اختبار نمر</h2>
     <input type="text" id="name-input" placeholder="اكتب اسمك الثلاثي هنا...">
     <button class="btn btn-save" style="width: 100%; max-width: 320px;" onclick="startQuiz()">ابدأ الاختبار</button>
 </div>
@@ -206,7 +215,6 @@
 <footer>صل على النبي ﷺ</footer>
 
 <script>
-    // جميع الأكواد البرمجية تظل كما هي
     const PUBLIC_KEY = "cQYqz70Te8w8308k-"; 
     const SERVICE_ID = "service_alszjvq"; 
     const TEMPLATE_ID = "template_8o5hc72"; 
