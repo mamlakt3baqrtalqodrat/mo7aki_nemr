@@ -379,17 +379,17 @@
     function resetFontSize() { currentFontSize = 18; renderQuestion(); }
 
     function finishQuiz() {
+        // 1. إيقاف التوقيت فوراً
         clearInterval(timerInterval);
         
-        // حساب الوقت المستغرق
+        // 2. حساب الوقت المستغرق
         const startTimestamp = parseInt(localStorage.getItem('tiger_starttime')) || Date.now();
         const timeTakenMs = Date.now() - startTimestamp;
         const minutesTaken = Math.floor(timeTakenMs / 60000);
         const secondsTaken = Math.floor((timeTakenMs % 60000) / 1000);
         const timeTakenString = `${minutesTaken} دقيقة و ${secondsTaken} ثانية`;
 
-        document.getElementById('main-content').innerHTML = "<div class='question-card' style='text-align:center;'><h2>جاري إرسال نتيجتك وحساب الوقت...</h2></div>";
-        
+        // 3. حساب النتيجة
         let correctCount = 0;
         let details = "";
         const prefixes = ["أ", "ب", "ج", "د"];
@@ -402,33 +402,35 @@
         });
 
         const scorePercent = Math.round((correctCount / 30) * 100);
-        
-        // إرسال البيانات لموقع EmailJS
+
+        // 4. عرض النتيجة فوراً للمستخدم (لتحسين السرعة)
+        document.getElementById('sidebar').style.display = 'none';
+        document.getElementById('main-content').innerHTML = `
+            <div class='question-card' style='text-align:center;'>
+                <h2 style='color:var(--primary-color)'>تم التسليم بنجاح!</h2>
+                <p>أحسنت يا <b>${userName}</b>، شكراً لمشاركتك.</p>
+                <div style='background:#f1f1f1; padding:20px; border-radius:10px; margin-top:15px;'>
+                    <p style='font-size:1.1em;'>درجتك هي: ${correctCount} من 30</p>
+                    <p style='font-size:2.2em; font-weight:bold; color:var(--primary-color);'>النسبة: %${scorePercent}</p>
+                    <hr style='border:0; border-top:1px solid #ccc; margin:15px 0;'>
+                    <p style='color:#666;'>الوقت المستغرق: <br><b>${timeTakenString}</b></p>
+                </div>
+                <p style='margin-top:20px; color:#888; font-size:12px;'>جاري تأكيد إرسال بياناتك للمشرف...</p>
+            </div>`;
+
+        // 5. إرسال البيانات لموقع EmailJS في الخلفية
         emailjs.send(SERVICE_ID, TEMPLATE_ID, {
             user_name: userName,
             user_score: scorePercent + "%",
             user_details: details,
             time_taken: timeTakenString 
         }).then(() => {
+            console.log("Email Sent Successfully");
             localStorage.clear();
-            document.getElementById('sidebar').style.display = 'none';
-            document.getElementById('main-content').innerHTML = `
-                <div class='question-card' style='text-align:center;'>
-                    <h2 style='color:var(--primary-color)'>تم التسليم بنجاح!</h2>
-                    <p>أحسنت يا <b>${userName}</b>، تم إرسال نتيجتك للمشرف.</p>
-                    <div style='background:#f1f1f1; padding:20px; border-radius:10px; margin-top:15px;'>
-                        <p style='font-size:1.1em;'>درجتك هي: ${correctCount} من 30</p>
-                        <p style='font-size:1.6em; font-weight:bold; color:var(--primary-color);'>النسبة المئوية: %${scorePercent}</p>
-                        <hr style='border:0; border-top:1px solid #ccc; margin:15px 0;'>
-                        <p style='color:#666;'>الوقت المستغرق في الحل: <br><b>${timeTakenString}</b></p>
-                    </div>
-                </div>`;
         }).catch(err => {
-            alert("حدث خطأ أثناء الإرسال، يرجى تصوير الشاشة لدرجتك.");
-            console.error(err);
+            console.error("Email Error:", err);
         });
     }
 </script>
 </body>
-</html>
 </html>
