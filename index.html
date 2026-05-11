@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي اختبار نمر </title>
+    <title>محاكي اختبار نمر - نسخة الوقت المستغرق</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root { 
@@ -24,7 +24,6 @@
             color: var(--text-dark);
         }
 
-        /* صورة الخلفية العامة */
         body::before {
             content: "";
             position: fixed;
@@ -38,7 +37,6 @@
             pointer-events: none;
         }
 
-        /* تعديل الصفحة الأولى لتكون بتدرج أخضر */
         #name-screen { 
             position: fixed; 
             inset: 0; 
@@ -267,13 +265,18 @@
         const savedEndTime = localStorage.getItem('tiger_endtime');
 
         if (savedName && savedEndTime) {
-            userName = savedName;
-            userAnswers = JSON.parse(savedAnswers);
-            document.getElementById('user-display').innerText = userName;
-            document.getElementById('name-screen').style.display = 'none';
-            renderQuestion();
-            startTimer(parseInt(savedEndTime));
-            updateStats();
+            const timeLeft = parseInt(savedEndTime) - Date.now();
+            if (timeLeft > 0) {
+                userName = savedName;
+                userAnswers = JSON.parse(savedAnswers);
+                document.getElementById('user-display').innerText = userName;
+                document.getElementById('name-screen').style.display = 'none';
+                renderQuestion();
+                startTimer(parseInt(savedEndTime));
+                updateStats();
+            } else {
+                localStorage.clear();
+            }
         }
     };
 
@@ -282,8 +285,12 @@
         if (input.value.trim().length < 3) { alert("أدخل اسمك الثلاثي"); return; }
         userName = input.value.trim();
         
-        const endTime = Date.now() + (30 * 60 * 1000);
+        const startTime = Date.now();
+        const duration = 30 * 60 * 1000;
+        const endTime = startTime + duration;
+
         localStorage.setItem('tiger_name', userName);
+        localStorage.setItem('tiger_starttime', startTime); 
         localStorage.setItem('tiger_endtime', endTime);
         localStorage.setItem('tiger_answers', JSON.stringify(userAnswers));
 
@@ -373,7 +380,15 @@
 
     function finishQuiz() {
         clearInterval(timerInterval);
-        document.getElementById('main-content').innerHTML = "<div class='question-card' style='text-align:center;'><h2>جاري معالجة نتيجتك...</h2></div>";
+        
+        // حساب الوقت المستغرق
+        const startTimestamp = parseInt(localStorage.getItem('tiger_starttime')) || Date.now();
+        const timeTakenMs = Date.now() - startTimestamp;
+        const minutesTaken = Math.floor(timeTakenMs / 60000);
+        const secondsTaken = Math.floor((timeTakenMs % 60000) / 1000);
+        const timeTakenString = `${minutesTaken} دقيقة و ${secondsTaken} ثانية`;
+
+        document.getElementById('main-content').innerHTML = "<div class='question-card' style='text-align:center;'><h2>جاري إرسال نتيجتك وحساب الوقت...</h2></div>";
         
         let correctCount = 0;
         let details = "";
@@ -388,24 +403,32 @@
 
         const scorePercent = Math.round((correctCount / 30) * 100);
         
+        // إرسال البيانات لموقع EmailJS
         emailjs.send(SERVICE_ID, TEMPLATE_ID, {
             user_name: userName,
             user_score: scorePercent + "%",
-            user_details: details
+            user_details: details,
+            time_taken: timeTakenString 
         }).then(() => {
             localStorage.clear();
             document.getElementById('sidebar').style.display = 'none';
             document.getElementById('main-content').innerHTML = `
                 <div class='question-card' style='text-align:center;'>
                     <h2 style='color:var(--primary-color)'>تم التسليم بنجاح!</h2>
-                    <p>أحسنت يا <b>${userName}</b>، تم إرسال نتيجتك بنجاح.</p>
+                    <p>أحسنت يا <b>${userName}</b>، تم إرسال نتيجتك للمشرف.</p>
                     <div style='background:#f1f1f1; padding:20px; border-radius:10px; margin-top:15px;'>
                         <p style='font-size:1.1em;'>درجتك هي: ${correctCount} من 30</p>
                         <p style='font-size:1.6em; font-weight:bold; color:var(--primary-color);'>النسبة المئوية: %${scorePercent}</p>
+                        <hr style='border:0; border-top:1px solid #ccc; margin:15px 0;'>
+                        <p style='color:#666;'>الوقت المستغرق في الحل: <br><b>${timeTakenString}</b></p>
                     </div>
                 </div>`;
+        }).catch(err => {
+            alert("حدث خطأ أثناء الإرسال، يرجى تصوير الشاشة لدرجتك.");
+            console.error(err);
         });
     }
 </script>
 </body>
+</html>
 </html>
