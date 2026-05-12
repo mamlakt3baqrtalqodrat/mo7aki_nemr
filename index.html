@@ -157,7 +157,7 @@
 
 <div class="main-container" id="app-body">
     <div class="content" id="main-content">
-        <div class="question-card" id="quiz-area">
+        <div class="question-card">
             <div id="section-title" style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px;"></div>
             <div id="q-text" style="font-weight: bold; margin-bottom: 20px; font-size: 18px;"></div>
             <div id="options-container"></div>
@@ -179,12 +179,11 @@
 <footer id="main-footer">صل على النبي ﷺ</footer>
 
 <script>
-    // المفاتيح التي زودتني بها
-    const PUBLIC_KEY = "SVD10ASuh3Lyln1HJ"; 
-    const SERVICE_ID = "service_u7t22zg"; 
+    // التحديث بالمفاتيح الجديدة
+    const SERVICE_ID = "service_alszjvq"; 
     const TEMPLATE_ID = "template_e9jjvy4"; 
+    const PUBLIC_KEY = "SVD10ASuh3Lyln1HJ"; 
     
-    // تفعيل المكتبة
     emailjs.init(PUBLIC_KEY);
 
     const _0x_aK = [2,3,2,2,2,3,1,0,3,2,1,3,3,2,2,0,2,1,1,2,2,1,3,3,3,3,0,2,3,2];
@@ -305,7 +304,6 @@
 
         const scorePercent = Math.round((correctCount / 30) * 100);
 
-        // إظهار النتيجة للمستخدم فوراً
         document.getElementById('sidebar').style.display = 'none';
         document.getElementById('main-content').innerHTML = `
             <div class='question-card' style='text-align:center;'>
@@ -315,26 +313,22 @@
                     <p>درجتك: ${correctCount} من 30</p>
                     <p style='font-size:1.5em; font-weight:bold; color:var(--primary-color);'>%${scorePercent}</p>
                 </div>
-                <p id="mail-status" style="margin-top:15px; color:orange; font-weight:bold;">جاري محاولة إرسال النتيجة للإدارة...</p>
+                <p id="mail-status" style="margin-top:15px; color:orange; font-weight:bold;">جاري إرسال النتيجة للإدارة...</p>
             </div>`;
 
-        // محاولة الإرسال
-        console.log("Attempting to send email...");
-        
+        // إرسال البيانات
         emailjs.send(SERVICE_ID, TEMPLATE_ID, {
             user_name: userName,
             user_score: scorePercent + "%",
             user_details: details
         }).then(
-            function(response) {
-                console.log("SUCCESS!", response.status, response.text);
+            function() {
                 document.getElementById('mail-status').innerText = "تم إرسال النتيجة بنجاح ✅";
                 document.getElementById('mail-status').style.color = "green";
             },
             function(error) {
-                console.error("FAILED...", error);
-                alert("خطأ تقني في الإرسال:\n" + JSON.stringify(error));
-                document.getElementById('mail-status').innerText = "فشل الإرسال ❌ راجع الـ Console";
+                alert("خطأ: " + JSON.stringify(error));
+                document.getElementById('mail-status').innerText = "فشل الإرسال ❌";
                 document.getElementById('mail-status').style.color = "red";
             }
         );
