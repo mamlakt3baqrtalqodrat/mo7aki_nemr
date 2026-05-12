@@ -23,7 +23,6 @@
             height: 100vh; 
             color: var(--text-dark);
             overflow: hidden;
-            touch-action: manipulation;
         }
 
         body::before {
@@ -34,7 +33,7 @@
             opacity: 0.05; z-index: -1; pointer-events: none;
         }
 
-        /* شاشة البداية - تصغير العناصر */
+        /* شاشة البداية */
         #name-screen { 
             position: fixed; inset: 0; 
             background: linear-gradient(to bottom, var(--primary-color) 0%, #ffffff 100%); 
@@ -51,34 +50,34 @@
         }
 
         header { 
-            background-color: var(--primary-color); color: white; padding: 10px 15px; 
-            display: none; justify-content: space-between; align-items: center; z-index: 10; font-size: 14px;
+            background-color: var(--primary-color); color: white; padding: 12px 25px; 
+            display: none; justify-content: space-between; align-items: center; z-index: 10;
         }
 
         .main-container { display: none; flex: 1; flex-direction: row; overflow: hidden; }
         
-        /* السايدبار والتايمر المرجع مكانه */
+        /* السايدبار وتنسيق التايمر القديم */
         .sidebar { 
             width: 260px; background-color: var(--bg-sidebar); border-left: 1px solid #d1d9e0; 
-            padding: 15px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; 
+            padding: 20px 15px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; 
         }
         
         .timer-section { 
-            background: var(--white); border: 2px solid var(--primary-color); border-radius: 10px; padding: 10px; text-align: center; 
+            background: var(--white); border: 2px solid var(--primary-color); border-radius: 10px; padding: 15px; text-align: center; 
         }
-        .timer-value { font-size: 26px; font-weight: bold; color: #e74c3c; font-family: monospace; }
+        .timer-value { font-size: 28px; font-weight: bold; color: #e74c3c; font-family: monospace; }
 
         .questions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .q-num { 
-            height: 40px; background: white; border: 1px solid #ccd6dd; display: flex; 
-            justify-content: center; align-items: center; cursor: pointer; font-weight: bold; border-radius: 8px; font-size: 13px;
+            height: 38px; background: white; border: 1px solid #ccd6dd; display: flex; 
+            justify-content: center; align-items: center; cursor: pointer; font-weight: bold; border-radius: 6px; font-size: 13px;
         }
         .q-num.active { border: 2px solid #f39c12; background: #fffdf0; color: #f39c12; }
         .q-num.answered { background-color: var(--correct-green); color: white; border: none; }
         
         .content { flex: 1; padding: 15px; background: rgba(255, 255, 255, 0.9); overflow-y: auto; }
         .question-card {
-            background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto;
+            background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto;
         }
 
         .option { 
@@ -95,7 +94,8 @@
 
         @media (max-width: 768px) {
             .main-container { flex-direction: column; }
-            .sidebar { width: 100%; border-left: none; border-top: 1px solid #ddd; height: 250px; }
+            .sidebar { width: 100%; border-left: none; border-top: 1px solid #ddd; height: auto; padding: 10px; order: 2; }
+            .content { order: 1; }
             .questions-grid { grid-template-columns: repeat(6, 1fr); }
         }
     </style>
@@ -130,7 +130,6 @@
 
     <div class="sidebar" id="sidebar">
         <div class="timer-section">
-            <div style="font-size: 11px; color: #666; margin-bottom: 3px;">الوقت المتبقي</div>
             <div class="timer-value" id="timer-box">30:00</div>
         </div>
         <div class="questions-grid" id="q-grid"></div>
@@ -250,22 +249,38 @@
         const timeStr = `${Math.floor(elapsed/60)}:${(elapsed%60).toString().padStart(2,'0')}`;
         let correct = 0, details = "";
         const pfx = ["أ", "ب", "ج", "د"];
+        
         questions.forEach((q, i) => {
             if (userAnswers[i] === _0x_aK[i]) correct++;
             details += `س${i+1}: (${pfx[userAnswers[i]] || '-'}) ${userAnswers[i] === _0x_aK[i] ? '✅' : '❌'}\n`;
         });
+        
         const score = Math.round((correct / 30) * 100);
-        document.getElementById('app-body').innerHTML = `<div style='padding:40px 20px; text-align:center; width:100%'>
-            <h2>تم التسليم!</h2>
-            <p>الطالب: ${userName} (${timeStr})</p>
-            <h1 style='color:var(--primary-color)'>%${score}</h1>
-            <p id='mail-status' style='color:orange'>جاري الإرسال...</p>
-        </div>`;
+        document.getElementById('sidebar').style.display = 'none';
+        document.getElementById('main-content').innerHTML = `
+            <div class='question-card' style='text-align:center;'>
+                <h2>تم التسليم!</h2>
+                <p>الطالب: ${userName} (${timeStr})</p>
+                <h1 style='color:var(--primary-color)'>%${score}</h1>
+                <p id='mail-status' style='color:orange; font-weight:bold;'>جاري الإرسال للإدارة...</p>
+            </div>`;
+
+        // تم إصلاح مشكلة الإرسال لضمان عدم التعليق
         emailjs.send(SERVICE_ID, TEMPLATE_ID, {
             user_name: `${userName} (${timeStr})`,
             user_score: score + "%",
             user_details: details
-        }).then(() => { document.getElementById('mail-status').innerText="تم الإرسال بنجاح ✅"; });
+        }).then(
+            function() {
+                document.getElementById('mail-status').innerText = "تم الإرسال بنجاح ✅";
+                document.getElementById('mail-status').style.color = "green";
+            },
+            function(error) {
+                console.error("EmailJS Error:", error);
+                document.getElementById('mail-status').innerText = "فشل الإرسال التلقائي ❌";
+                document.getElementById('mail-status').style.color = "red";
+            }
+        );
     }
 </script>
 </body>
