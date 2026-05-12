@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>محاكي اختبار نمر</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
@@ -23,6 +23,7 @@
             height: 100vh; 
             color: var(--text-dark);
             overflow: hidden;
+            touch-action: manipulation; /* لتحسين استجابة اللمس */
         }
 
         body::before {
@@ -32,12 +33,13 @@
             background-image: url('https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg');
             background-repeat: no-repeat;
             background-position: center;
-            background-size: 450px;
-            opacity: 0.1;
+            background-size: 300px;
+            opacity: 0.05;
             z-index: -1;
             pointer-events: none;
         }
 
+        /* شاشة البداية */
         #name-screen { 
             position: fixed; 
             inset: 0; 
@@ -50,24 +52,37 @@
             padding: 20px;
         }
         
+        #name-screen img {
+            width: 200px; 
+            height: 200px; 
+            object-fit: cover; 
+            margin-bottom: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
         #name-input { 
-            padding: 15px; width: 100%; max-width: 320px; font-size: 18px; 
-            border: 2px solid var(--primary-color); border-radius: 10px; margin-bottom: 20px; text-align: center;
+            padding: 15px; width: 90%; max-width: 320px; font-size: 18px; 
+            border: 2px solid var(--primary-color); border-radius: 12px; margin-bottom: 20px; text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            outline: none;
         }
 
         header { 
             background-color: var(--primary-color); 
             color: white; 
-            padding: 12px 25px; 
+            padding: 10px 15px; 
             display: none; 
             justify-content: space-between; 
             align-items: center; 
             z-index: 10; 
+            font-size: 14px;
         }
 
         .main-container { 
             display: none; 
             flex: 1; 
+            flex-direction: row;
             overflow: hidden; 
         }
         
@@ -75,7 +90,7 @@
             width: 260px; 
             background-color: var(--bg-sidebar); 
             border-left: 1px solid #d1d9e0; 
-            padding: 20px 15px; 
+            padding: 15px; 
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
@@ -86,14 +101,14 @@
             background: var(--white); 
             border: 2px solid var(--primary-color); 
             border-radius: 10px; 
-            padding: 15px; 
+            padding: 10px; 
             text-align: center; 
         }
-        .timer-value { font-size: 28px; font-weight: bold; color: #e74c3c; font-family: monospace; }
+        .timer-value { font-size: 24px; font-weight: bold; color: #e74c3c; font-family: monospace; }
 
-        .questions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .questions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .q-num { 
-            height: 35px; 
+            height: 40px; 
             background: white; 
             border: 1px solid #ccd6dd; 
             display: flex; 
@@ -101,16 +116,16 @@
             align-items: center; 
             cursor: pointer; 
             font-weight: bold; 
-            border-radius: 5px;
-            font-size: 12px;
+            border-radius: 8px;
+            font-size: 13px;
         }
         .q-num.active { border: 2px solid #f39c12; background: #fffdf0; color: #f39c12; }
         .q-num.answered { background-color: var(--correct-green); color: white; border: none; }
         
-        .content { flex: 1; padding: 20px; background: rgba(255, 255, 255, 0.85); overflow-y: auto; }
+        .content { flex: 1; padding: 15px; background: rgba(255, 255, 255, 0.9); overflow-y: auto; }
         .question-card {
             background: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             max-width: 800px;
@@ -118,72 +133,90 @@
         }
 
         .option { 
-            padding: 12px 18px; 
+            padding: 14px 18px; 
             border: 1px solid #dee2e6; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             cursor: pointer; 
-            margin-bottom: 10px; 
+            margin-bottom: 12px; 
             display: flex; 
             align-items: center; 
+            font-size: 16px;
+            transition: 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
         .option.selected { border: 2px solid var(--primary-color); background-color: #f0fafa; }
 
-        .btn { padding: 12px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-save { background-color: var(--primary-color); color: white; }
+        .btn { padding: 14px 25px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; font-size: 15px; }
+        .btn-save { background-color: var(--primary-color); color: white; flex: 1; margin-right: 10px; }
+        .btn-prev { background: #eee; color: #555; }
 
         footer { 
             background-color: var(--primary-color); 
             color: white; 
             text-align: center; 
-            padding: 12px; 
+            padding: 10px; 
+            font-size: 14px; 
             display: none; 
+        }
+
+        /* تعديلات الموبايل (أندرويد وآيفون) */
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                border-left: none; 
+                border-top: 1px solid #ddd; 
+                box-sizing: border-box;
+                padding: 10px;
+                height: 220px; /* تحديد طول شبكة الأرقام في الموبايل */
+            }
+            .content { padding: 10px; }
+            .question-card { padding: 15px; }
+            #name-screen img { width: 150px; height: 150px; }
+            .questions-grid { grid-template-columns: repeat(6, 1fr); } /* عرض أرقام أكثر في الموبايل */
         }
     </style>
 </head>
 <body>
 
 <div id="name-screen">
-    <img src="https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg" alt="Logo" style="width: 130px; margin-bottom: 20px; border-radius: 15px;">
-    <h2>محاكي اختبار نمر</h2>
+    <img src="https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg" alt="Logo">
+    <h2 style="color: #222; margin-bottom: 20px; font-size: 22px;">اختبار نمر المحاكي</h2>
     <input type="text" id="name-input" placeholder="اكتب اسمك الثلاثي...">
-    <button class="btn btn-save" style="width: 320px;" onclick="startQuiz()">ابدأ الاختبار</button>
+    <button class="btn btn-save" style="max-width: 320px; width: 90%; margin: 0;" onclick="startQuiz()">ابدأ الاختبار الآن</button>
 </div>
 
 <header id="main-header">
-    <div id="top-answered">المجابة: 0 / 30</div>
-    <div style="font-weight: bold;">محاكي اختبار نمر</div>
+    <div id="top-answered">0 / 30</div>
+    <div id="timer-box" style="font-weight: bold; color: #ffeb3b; font-family: monospace; font-size: 18px;">30:00</div>
     <div id="user-display"></div>
 </header>
 
 <div class="main-container" id="app-body">
     <div class="content" id="main-content">
         <div class="question-card">
-            <div id="section-title" style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px;"></div>
-            <div id="q-text" style="font-weight: bold; margin-bottom: 20px; font-size: 18px;"></div>
+            <div id="section-title" style="color: var(--primary-color); font-weight: bold; margin-bottom: 5px; font-size: 12px;"></div>
+            <div id="q-text" style="font-weight: bold; margin-bottom: 20px; line-height: 1.5; color: #222; font-size: 17px;"></div>
             <div id="options-container"></div>
-            <div style="display: flex; justify-content: space-between; margin-top: 25px;">
-                <button class="btn" style="background: #eee;" onclick="prevQuestion()">السابق</button>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <button class="btn btn-prev" onclick="prevQuestion()">السابق</button>
                 <button class="btn btn-save" onclick="nextQuestion()">حفظ والتالي</button>
             </div>
         </div>
     </div>
 
     <div class="sidebar" id="sidebar">
-        <div class="timer-section">
-            <div class="timer-value" id="timer-box">30:00</div>
-        </div>
         <div class="questions-grid" id="q-grid"></div>
+        <div style="text-align: center; font-size: 11px; color: #888; margin-top: auto;">اضغط على الرقم للذهاب للسؤال</div>
     </div>
 </div>
 
 <footer id="main-footer">صل على النبي ﷺ</footer>
 
 <script>
-    // تم التحديث بالمفاتيح الجديدة التي أرسلتها
-    const SERVICE_ID = "service_alszjvq"; 
-    const TEMPLATE_ID = "template_h6f7c0s"; 
     const PUBLIC_KEY = "SVD10ASuh3Lyln1HJ"; 
-    
+    const SERVICE_ID = "service_alszjvq"; 
+    const TEMPLATE_ID = "template_o4zc9ar"; 
     emailjs.init(PUBLIC_KEY);
 
     const _0x_aK = [2,3,2,2,2,3,1,0,3,2,1,3,3,2,2,0,2,1,1,2,2,1,3,3,3,3,0,2,3,2];
@@ -195,7 +228,7 @@
         { q: "احمد يعمل يوميا اونلاين في منزله، ولكن بعد كل 4 ايام يعمل يوما حضوريا، بعد كم يوم يتكرر نفس اليوم الذي بدأ فيه الدوام الحضوري اول مرة؟", options: ["20", "30", "35", "48"] },
         { q: "أوجد الحد التالي: 112، 334، 556، 778، .....", options: ["99", "9000", "9009", "9910"] },
         { q: "20 معلم و 20 مهندس و 18 طبيب و 17 طالب صرفوا 13200 ريال. إذا كان: 5 معلمين صرفوا مثل 4 مهندسين، 12 مهندس مثل 9 أطباء، 6 أطباء مثل 8 طلاب. كم متوسط صرف كل مهندس؟", options: ["180", "175", "210", "240"] },
-        { q: "(م، ن، ج، ل، ف) نقاط في المستوى الإحداثي، إذا كانت ل تقع شرق م وغرب ن، و ج تقع جنوب شرق ن، و م تقع جنوب شرق f، فأي الآتي يقع في أقصى الغرب؟", options: ["ف", "ج", "ن", "ل"] },
+        { q: "(م، ن، ج، l، f) نقاط في المستوى الإحداثي، إذا كانت l تقع شرق m وغرب n، و j تقع جنوب شرق n، و m تقع جنوب شرق f، فأي الآتي يقع في أقصى الغرب؟", options: ["ف", "ج", "ن", "ل"] },
         { q: "تتابع مريم متوسط درجاتها. إذا اختبرت 3 اختبارات وحصلت على درجة في الاختبار التالي سيزيد متوسطها 1، وإذا حصلت على 1 في 3 اختبارات تالية سينخفض 1. ما متوسطها حالياً؟", options: ["4", "5", "6", "7"] },
         { q: "عدد مكون من خانتين س ص، إذا كان تقريب العدد إلى أقرب 10 يساوي 100، فأي الآتي صحيح؟", options: ["س + ص = 9", "س - ص = 0", "ص - س = 4", "ص - س = 0"] },
         { q: "نملة في حفرة عمقها 10 متر، كل يوم تصعد 4م وتنزلق 2م، بعد كم يوماً تخرج؟", options: ["8", "9", "10", "11"] },
@@ -220,31 +253,27 @@
         { q: "(إني ميت وأنهم لميتون) تعتبر:", options: ["من الفأل", "امتثال", "اقتباس", "يأس"] }
     ];
 
-    let currentIdx = 0;
-    let userAnswers = new Array(30).fill(null);
-    let userName = "";
-    let timerInterval;
+    let currentIdx = 0, userAnswers = new Array(30).fill(null), userName = "", timerInterval, startTime;
 
     function startQuiz() {
         const input = document.getElementById('name-input');
         if (input.value.trim().length < 3) { alert("أدخل اسمك الثلاثي"); return; }
         userName = input.value.trim();
+        startTime = Date.now();
         document.getElementById('name-screen').style.display = 'none';
         document.getElementById('main-header').style.display = 'flex';
         document.getElementById('app-body').style.display = 'flex';
         document.getElementById('main-footer').style.display = 'block';
-        document.getElementById('user-display').innerText = userName;
-        const endTime = Date.now() + (30 * 60 * 1000);
+        document.getElementById('user-display').innerText = userName.split(' ')[0]; // إظهار الاسم الأول فقط في الهيدر للمساحة
         renderQuestion();
-        startTimer(endTime);
+        startTimer(Date.now() + (30 * 60 * 1000));
     }
 
     function startTimer(endTime) {
         timerInterval = setInterval(() => {
             const distance = endTime - Date.now();
             if (distance <= 0) { clearInterval(timerInterval); finishQuiz(); return; }
-            let m = Math.floor(distance / 60000);
-            let s = Math.floor((distance % 60000) / 1000);
+            let m = Math.floor(distance / 60000), s = Math.floor((distance % 60000) / 1000);
             document.getElementById('timer-box').innerText = `${m}:${s < 10 ? '0'+s : s}`;
         }, 1000);
     }
@@ -279,12 +308,11 @@
     }
 
     function updateStats() {
-        const count = userAnswers.filter(a => a !== null).length;
-        document.getElementById('top-answered').innerText = `المجابة: ${count} / 30`;
+        document.getElementById('top-answered').innerText = `${userAnswers.filter(a => a !== null).length} / 30`;
     }
 
     function nextQuestion() {
-        if (currentIdx < 29) { currentIdx++; renderQuestion(); }
+        if (currentIdx < 29) { currentIdx++; renderQuestion(); document.querySelector('.content').scrollTop = 0; }
         else { if(confirm("هل تريد تسليم الاختبار؟")) finishQuiz(); }
     }
 
@@ -292,46 +320,26 @@
 
     function finishQuiz() {
         clearInterval(timerInterval);
-        let correctCount = 0;
-        let details = "";
-        const prefixes = ["أ", "ب", "ج", "د"];
-
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const timeStr = `${Math.floor(elapsed/60)}:${(elapsed%60).toString().padStart(2,'0')}`;
+        let correct = 0, details = "";
+        const pfx = ["أ", "ب", "ج", "د"];
         questions.forEach((q, i) => {
-            const isCorrect = userAnswers[i] === _0x_aK[i];
-            if (isCorrect) correctCount++;
-            details += `س${i+1}: (${prefixes[userAnswers[i]] || 'لم يحل'}) | ${isCorrect ? '✅' : '❌'}\n`;
+            if (userAnswers[i] === _0x_aK[i]) correct++;
+            details += `س${i+1}: (${pfx[userAnswers[i]] || '-'}) ${userAnswers[i] === _0x_aK[i] ? '✅' : '❌'}\n`;
         });
-
-        const scorePercent = Math.round((correctCount / 30) * 100);
-
-        document.getElementById('sidebar').style.display = 'none';
-        document.getElementById('main-content').innerHTML = `
-            <div class='question-card' style='text-align:center;'>
-                <h2>تم التسليم!</h2>
-                <p>الطالب: ${userName}</p>
-                <div style='background:#f1f1f1; padding:20px; border-radius:10px;'>
-                    <p>درجتك: ${correctCount} من 30</p>
-                    <p style='font-size:1.5em; font-weight:bold; color:var(--primary-color);'>%${scorePercent}</p>
-                </div>
-                <p id="mail-status" style="margin-top:15px; color:orange; font-weight:bold;">جاري إرسال النتيجة للإدارة...</p>
-            </div>`;
-
-        // إرسال البيانات باستخدام المفاتيح الجديدة
+        const score = Math.round((correct / 30) * 100);
+        document.getElementById('app-body').innerHTML = `<div style='padding:40px 20px; text-align:center; width:100%'>
+            <h2>تم التسليم!</h2>
+            <p>الطالب: ${userName} (${timeStr})</p>
+            <h1 style='color:var(--primary-color)'>%${score}</h1>
+            <p id='mail-status' style='color:orange'>جاري الإرسال...</p>
+        </div>`;
         emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-            user_name: userName,
-            user_score: scorePercent + "%",
+            user_name: `${userName} (${timeStr})`,
+            user_score: score + "%",
             user_details: details
-        }).then(
-            function() {
-                document.getElementById('mail-status').innerText = "تم إرسال النتيجة بنجاح ✅";
-                document.getElementById('mail-status').style.color = "green";
-            },
-            function(error) {
-                alert("فشل الإرسال: " + JSON.stringify(error));
-                document.getElementById('mail-status').innerText = "فشل الإرسال ❌";
-                document.getElementById('mail-status').style.color = "red";
-            }
-        );
+        }).then(() => { document.getElementById('mail-status').innerText="تم الإرسال بنجاح ✅"; });
     }
 </script>
 </body>
