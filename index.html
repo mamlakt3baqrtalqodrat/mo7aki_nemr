@@ -362,7 +362,6 @@
 
     function finishQuiz() {
         clearInterval(timerInterval);
-        document.getElementById('main-content').innerHTML = "<div class='question-card' style='text-align:center;'><h2>جاري معالجة نتيجتك...</h2></div>";
         
         let correctCount = 0;
         let details = "";
@@ -377,21 +376,25 @@
 
         const scorePercent = Math.round((correctCount / 30) * 100);
         
+        // 1. إظهار النتيجة للمستخدم فوراً
+        document.getElementById('sidebar').style.display = 'none';
+        document.getElementById('main-content').innerHTML = `
+            <div class='question-card' style='text-align:center;'>
+                <h2 style='color:var(--primary-color)'>تم التسليم بنجاح!</h2>
+                <p>أحسنت يا <b>${userName}</b>، تم إنهاء الاختبار.</p>
+                <div style='background:#f1f1f1; padding:20px; border-radius:10px; margin-top:15px;'>
+                    <p style='font-size:1.1em;'>درجتك هي: ${correctCount} من 30</p>
+                    <p style='font-size:1.6em; font-weight:bold; color:var(--primary-color);'>النسبة المئوية: %${scorePercent}</p>
+                </div>
+            </div>`;
+
+        // 2. إرسال الإيميل في الخلفية دون أن يؤثر على الواجهة
         emailjs.send(SERVICE_ID, TEMPLATE_ID, {
             user_name: userName,
             user_score: scorePercent + "%",
             user_details: details
-        }).then(() => {
-            document.getElementById('sidebar').style.display = 'none';
-            document.getElementById('main-content').innerHTML = `
-                <div class='question-card' style='text-align:center;'>
-                    <h2 style='color:var(--primary-color)'>تم التسليم بنجاح!</h2>
-                    <p>أحسنت يا <b>${userName}</b>، تم إرسال نتيجتك بنجاح.</p>
-                    <div style='background:#f1f1f1; padding:20px; border-radius:10px; margin-top:15px;'>
-                        <p style='font-size:1.1em;'>درجتك هي: ${correctCount} من 30</p>
-                        <p style='font-size:1.6em; font-weight:bold; color:var(--primary-color);'>النسبة المئوية: %${scorePercent}</p>
-                    </div>
-                </div>`;
+        }).catch(err => {
+            console.log("حدث خطأ أثناء محاولة إرسال الإيميل:", err);
         });
     }
 </script>
