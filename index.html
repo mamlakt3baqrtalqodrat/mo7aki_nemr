@@ -179,9 +179,9 @@
 <footer id="main-footer">صل على النبي ﷺ</footer>
 
 <script>
-    // التحديث بالمفاتيح الجديدة
+    // تم التحديث بالمفاتيح الجديدة التي أرسلتها
     const SERVICE_ID = "service_alszjvq"; 
-    const TEMPLATE_ID = "template_e9jjvy4"; 
+    const TEMPLATE_ID = "template_o4zc9ar"; 
     const PUBLIC_KEY = "SVD10ASuh3Lyln1HJ"; 
     
     emailjs.init(PUBLIC_KEY);
@@ -316,7 +316,7 @@
                 <p id="mail-status" style="margin-top:15px; color:orange; font-weight:bold;">جاري إرسال النتيجة للإدارة...</p>
             </div>`;
 
-        // إرسال البيانات
+        // إرسال البيانات باستخدام المفاتيح الجديدة
         emailjs.send(SERVICE_ID, TEMPLATE_ID, {
             user_name: userName,
             user_score: scorePercent + "%",
@@ -327,7 +327,7 @@
                 document.getElementById('mail-status').style.color = "green";
             },
             function(error) {
-                alert("خطأ: " + JSON.stringify(error));
+                alert("فشل الإرسال: " + JSON.stringify(error));
                 document.getElementById('mail-status').innerText = "فشل الإرسال ❌";
                 document.getElementById('mail-status').style.color = "red";
             }
