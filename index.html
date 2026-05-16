@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>محاكي اختبار نمر</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
@@ -14,6 +14,11 @@
             --correct-green: #2ecc71;
         }
         
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* إزالة الوميض الأزرق عند اللمس في الآيفون */
+        }
+
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: #f7f9fb; 
@@ -23,6 +28,9 @@
             height: 100vh; 
             color: var(--text-dark);
             overflow: hidden;
+            /* دعم منطقة الأمان في الآيفون */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         body::before {
@@ -35,8 +43,8 @@
             background-image: url('https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg');
             background-repeat: no-repeat;
             background-position: center;
-            background-size: 450px;
-            opacity: 0.1;
+            background-size: 280px; /* تصغير حجم الخلفية ليناسب الجوال */
+            opacity: 0.06;
             z-index: -1;
             pointer-events: none;
         }
@@ -62,26 +70,30 @@
             border-radius: 10px; 
             margin-bottom: 20px; 
             text-align: center;
+            outline: none;
         }
 
         header { 
             background-color: var(--primary-color); 
             color: white; 
-            padding: 12px 25px; 
+            padding: 15px 20px; 
             display: none; 
             justify-content: space-between; 
             align-items: center; 
             z-index: 10; 
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .main-container { 
             display: none; 
             flex: 1; 
             overflow: hidden; 
+            flex-direction: row;
         }
         
         .sidebar { 
-            width: 260px; 
+            width: 280px; 
             background-color: var(--bg-sidebar); 
             border-left: 1px solid #d1d9e0; 
             padding: 20px 15px; 
@@ -95,12 +107,12 @@
             background: var(--white); 
             border: 2px solid var(--primary-color); 
             border-radius: 10px; 
-            padding: 15px; 
+            padding: 12px; 
             text-align: center; 
         }
 
         .timer-value { 
-            font-size: 28px; 
+            font-size: 26px; 
             font-weight: bold; 
             color: #e74c3c; 
             font-family: monospace; 
@@ -109,11 +121,11 @@
         .questions-grid { 
             display: grid; 
             grid-template-columns: repeat(5, 1fr); 
-            gap: 5px; 
+            gap: 6px; 
         }
 
         .q-num { 
-            height: 35px; 
+            height: 40px; /* زيادة الطول ليناسب اللمس */
             background: white; 
             border: 1px solid #ccd6dd; 
             display: flex; 
@@ -121,8 +133,8 @@
             align-items: center; 
             cursor: pointer; 
             font-weight: bold; 
-            border-radius: 5px;
-            font-size: 12px;
+            border-radius: 8px;
+            font-size: 13px;
         }
 
         .q-num.active { 
@@ -139,14 +151,14 @@
         
         .content { 
             flex: 1; 
-            padding: 20px; 
-            background: rgba(255, 255, 255, 0.85); 
+            padding: 15px; 
+            background: rgba(255, 255, 255, 0.9); 
             overflow-y: auto; 
         }
 
         .question-card {
             background: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             max-width: 800px;
@@ -154,26 +166,33 @@
         }
 
         .option { 
-            padding: 12px 18px; 
+            padding: 14px 18px; /* زيادة المساحة الداخلية للضغط المريح */
             border: 1px solid #dee2e6; 
             border-radius: 10px; 
             cursor: pointer; 
-            margin-bottom: 10px; 
+            margin-bottom: 12px; 
             display: flex; 
             align-items: center; 
+            font-size: 15px;
+            transition: background 0.2s;
         }
 
         .option.selected { 
             border: 2px solid var(--primary-color); 
             background-color: #f0fafa; 
+            font-weight: bold;
         }
 
         .btn { 
-            padding: 12px 30px; 
-            border-radius: 8px; 
+            padding: 14px 25px; 
+            border-radius: 10px; 
             border: none; 
             cursor: pointer; 
             font-weight: bold; 
+            font-size: 15px;
+            flex: 1;
+            margin: 0 5px;
+            text-align: center;
         }
 
         .btn-save { 
@@ -187,16 +206,82 @@
             text-align: center; 
             padding: 12px; 
             display: none; 
+            font-size: 14px;
+        }
+
+        /* تعديلات خاصة بالشاشات الصغيرة (الأندرويد والآيفون) */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column; /* تحويل الترتيب عمودياً */
+            }
+
+            .sidebar {
+                width: 100%;
+                order: -1; /* جعل العداد والشبكة في الأعلى */
+                padding: 10px;
+                border-left: none;
+                border-bottom: 1px solid #d1d9e0;
+                gap: 10px;
+            }
+
+            .timer-section {
+                padding: 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .timer-title {
+                font-weight: bold;
+            }
+
+            .timer-value {
+                font-size: 22px;
+            }
+
+            .questions-grid {
+                grid-template-columns: repeat(10, 1fr); /* عرض 10 أرقام في الصف الواحد بالجوال */
+                gap: 4px;
+            }
+
+            .q-num {
+                height: 32px;
+                font-size: 11px;
+                border-radius: 5px;
+            }
+
+            .content {
+                padding: 10px;
+            }
+
+            .question-card {
+                padding: 15px;
+                border-radius: 10px;
+            }
+
+            #q-text {
+                font-size: 16px !important;
+            }
+
+            .option {
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+            
+            header {
+                padding: 12px 15px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
 <body>
 
 <div id="name-screen">
-    <img src="https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg" alt="Logo" style="width: 130px; margin-bottom: 20px; border-radius: 15px;">
-    <h2>محاكي اختبار نمر</h2>
+    <img src="https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg" alt="Logo" style="width: 110px; margin-bottom: 20px; border-radius: 15px;">
+    <h2 style="margin-bottom: 20px; color:#333;">محاكي اختبار نمر</h2>
     <input type="text" id="name-input" placeholder="اكتب اسمك الثلاثي...">
-    <button class="btn btn-save" style="width: 320px;" onclick="startQuiz()">ابدأ الاختبار</button>
+    <button class="btn btn-save" style="width: 100%; max-width: 320px; margin: 0;" onclick="startQuiz()">ابدأ الاختبار</button>
 </div>
 
 <header id="main-header">
@@ -206,23 +291,24 @@
 </header>
 
 <div class="main-container" id="app-body">
-    <div class="content" id="main-content">
-        <div class="question-card">
-            <div id="section-title" style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px;"></div>
-            <div id="q-text" style="font-weight: bold; margin-bottom: 20px; font-size: 18px;"></div>
-            <div id="options-container"></div>
-            <div style="display: flex; justify-content: space-between; margin-top: 25px;">
-                <button class="btn" style="background: #eee;" onclick="prevQuestion()">السابق</button>
-                <button class="btn btn-save" onclick="nextQuestion()">حفظ والتالي</button>
-            </div>
-        </div>
-    </div>
-
     <div class="sidebar" id="sidebar">
         <div class="timer-section">
+            <span class="timer-title" style="display: none; color: #555;">الوقت المتبقي:</span>
             <div class="timer-value" id="timer-box">30:00</div>
         </div>
         <div class="questions-grid" id="q-grid"></div>
+    </div>
+
+    <div class="content" id="main-content">
+        <div class="question-card">
+            <div id="section-title" style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px; font-size: 14px;"></div>
+            <div id="q-text" style="font-weight: bold; margin-bottom: 20px; font-size: 18px; line-height: 1.5;"></div>
+            <div id="options-container"></div>
+            <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+                <button class="btn" style="background: #eee; color: #333;" onclick="prevQuestion()">السابق</button>
+                <button class="btn btn-save" onclick="nextQuestion()">حفظ والتالي</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -235,7 +321,6 @@
     
     emailjs.init(PUBLIC_KEY);
 
-    // مصفوفة مفاتيح الأجوبة الصحيحة لـ 30 سؤال (15 كمي ثم 15 لفظي مطابقة لإجاباتك تماماً)
     const _0x_aK = [2, 0, 0, 0, 3, 0, 2, 2, 2, 1, 1, 2, 3, 1, 0, 0, 3, 3, 2, 1, 1, 3, 0, 3, 2, 0, 0, 3, 2, 3];
     
     const questions = [
@@ -250,7 +335,7 @@
         { q: "في جامعة عدد الطالبات ضعف عدد الطلاب، تم تكريم 1/8 الطالبات، و 1/9 الطلاب، ما نسبة الذين لم يكرموا؟", options: ["35/72", "32/36", "23/36", "1/24"] },
         { q: "10 أشخاص في طابور، خالد ترتيبه الخامس من اليمين وأحمد ترتيبه الثامن من اليسار، كم شخص يقف بين أحمد وخالد؟", options: ["1", "2", "4", "8"] },
         { q: "إذا كان طول أحمد مثلي طول خالد، طول خالد 70٪ من طول سعد، طول هادي 120٪ من طول أحمد، ما أقصر شخص فيهم؟", options: ["أحمد", "خالد", "سعد", "هادي"] },
-        { q: "محل للقماش يبيع القطعة بـ 500 ريال وكل 3 قطع بخصم 10٪، كم تدفع عند شراء 5 قطع؟", options: ["2200", "2250", "2350", "2375"] },
+        { q: "محل للقماش يبيع القطعة بـ 500 ريال وكل 3 قطع بخصم 10٪، كم تدفع عند شراء 5 قطع？", options: ["2200", "2250", "2350", "2375"] },
         { q: "3 مدن رسمت على خريطة كرؤوس مثلث متطابق الأضلاع محيطه = 9 سم، إذا كان مقياس الرسم = 1 سم : 50 كلم، ما المسافة بين كل مدينة وأخرى؟", options: ["450 كلم", "300 كلم", "200 كلم", "150 كلم"] },
         { q: "قطعة أرض مستطيلة الشكل طولها 150 م وعرضها 100 م، و1 كيلوجرام من بذور القمح تغطي 15 م² من الأرض، وسعر الكيلوجرام من البذور 5 ريال، كم التكلفة لتغطية الأرض كاملة؟", options: ["2500", "5000", "7500", "10000"] },
         { q: "80 بلاطة مربعة متطابقة، محيط البلاطة = 1 متر. ما مساحة البلاط الكلي بالمتر المربع؟", options: ["5", "10", "25", "50"] },
@@ -276,6 +361,17 @@
     let userName = ""; 
     let timerInterval;
 
+    // تفعيل ظهور كلمة "الوقت المتبقي" فقط في شاشات الجوال الممتدة عرضياً
+    function checkDeviceWidth() {
+        const title = document.querySelector('.timer-title');
+        if(window.innerWidth <= 768) {
+            title.style.display = 'inline-block';
+        } else {
+            title.style.display = 'none';
+        }
+    }
+    window.addEventListener('resize', checkDeviceWidth);
+
     function startQuiz() {
         const input = document.getElementById('name-input');
         if (input.value.trim().length < 3) { 
@@ -288,6 +384,7 @@
         document.getElementById('app-body').style.display = 'flex'; 
         document.getElementById('main-footer').style.display = 'block';
         document.getElementById('user-display').innerText = userName;
+        checkDeviceWidth();
         const endTime = Date.now() + (30 * 60 * 1000);
         renderQuestion(); 
         startTimer(endTime);
@@ -303,7 +400,10 @@
             }
             let m = Math.floor(distance / 60000); 
             let s = Math.floor((distance % 60000) / 1000);
-            document.getElementById('timer-box').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            
+            let mStr = m < 10 ? '0' + m : m;
+            let sStr = s < 10 ? '0' + s : s;
+            document.getElementById('timer-box').innerText = `${mStr}:${sStr}`;
         }, 1000);
     }
 
@@ -318,7 +418,7 @@
         q.options.forEach((opt, i) => {
             const div = document.createElement('div'); 
             div.className = `option ${userAnswers[currentIdx] === i ? 'selected' : ''}`;
-            div.innerHTML = `<span style="background:var(--primary-color); color:white; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; margin-left:10px; font-size:12px;">${prefixes[i]}</span> ${opt}`;
+            div.innerHTML = `<span style="background:var(--primary-color); color:white; width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; margin-left:10px; font-size:12px; font-weight:bold;">${prefixes[i]}</span> ${opt}`;
             div.onclick = () => { 
                 userAnswers[currentIdx] = i; 
                 renderQuestion(); 
@@ -380,20 +480,20 @@
         const scorePercent = Math.round((correctCount / 30) * 100);
         document.getElementById('sidebar').style.display = 'none';
         document.getElementById('main-content').innerHTML = `
-            <div class='question-card' style='text-align:center;'>
-                <h2>تم التسليم!</h2> 
-                <p>الطالب: ${userName}</p>
-                <div style='background:#f1f1f1; padding:20px; border-radius:10px;'>
-                    <p>درجتك: ${correctCount} من 30</p> 
-                    <p style='font-size:1.5em; font-weight:bold; color:var(--primary-color);'>%${scorePercent}</p>
+            <div class='question-card' style='text-align:center; margin-top: 20px;'>
+                <h2 style="color: var(--primary-color);">تم التسليم بنجاح!</h2> 
+                <p style="font-size:16px;">الطالب: <strong>${userName}</strong></p>
+                <div style='background:#f8f9fa; padding:20px; border-radius:12px; border: 1px solid #eee; max-width: 300px; margin: 0 auto;'>
+                    <p style="margin:0 0 10px 0; color:#555;">درجتك: ${correctCount} من 30</p> 
+                    <p style='font-size:2em; font-weight:bold; color:var(--primary-color); margin:0;'>%${scorePercent}</p>
                 </div>
-                <p id="mail-status" style="margin-top:15px; color:orange; font-weight:bold;">جاري إرسال النتيجة للإدارة...</p>
+                <p id="mail-status" style="margin-top:20px; color:orange; font-weight:bold; font-size:14px;">جاري إرسال النتيجة للإدارة...</p>
             </div>`;
             
         emailjs.send(SERVICE_ID, TEMPLATE_ID, { 
             user_name: userName, 
             user_score: scorePercent + "%", 
-            user_details: details 
+            user_details: details  
         }).then(
             function() { 
                 document.getElementById('mail-status').innerText = "تم إرسال النتيجة بنجاح ✅"; 
@@ -401,7 +501,7 @@
             },
             function(error) { 
                 alert("فشل الإرسال: " + JSON.stringify(error)); 
-                document.getElementById('mail-status').innerText = "فشل الإرسال ❌"; 
+                document.getElementById('mail-status').innerText = "فشل إرسال النتيجة تلقائياً ❌"; 
                 document.getElementById('mail-status').style.color = "red"; 
             }
         );
