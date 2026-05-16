@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي اختبار نمر - النسخة المحدثة</title>
+    <title>محاكي اختبار نمر</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root { 
@@ -28,7 +28,10 @@
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
             background-image: url('https://i.ibb.co/qYjkGjbD/6cc50c2f-b3ae-4567-9938-c6babc3abd37.jpg');
             background-repeat: no-repeat;
             background-position: center;
@@ -51,8 +54,14 @@
         }
         
         #name-input { 
-            padding: 15px; width: 100%; max-width: 320px; font-size: 18px; 
-            border: 2px solid var(--primary-color); border-radius: 10px; margin-bottom: 20px; text-align: center;
+            padding: 15px; 
+            width: 100%; 
+            max-width: 320px; 
+            font-size: 18px; 
+            border: 2px solid var(--primary-color); 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            text-align: center;
         }
 
         header { 
@@ -89,9 +98,20 @@
             padding: 15px; 
             text-align: center; 
         }
-        .timer-value { font-size: 28px; font-weight: bold; color: #e74c3c; font-family: monospace; }
 
-        .questions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .timer-value { 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #e74c3c; 
+            font-family: monospace; 
+        }
+
+        .questions-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 5px; 
+        }
+
         .q-num { 
             height: 35px; 
             background: white; 
@@ -104,10 +124,26 @@
             border-radius: 5px;
             font-size: 12px;
         }
-        .q-num.active { border: 2px solid #f39c12; background: #fffdf0; color: #f39c12; }
-        .q-num.answered { background-color: var(--correct-green); color: white; border: none; }
+
+        .q-num.active { 
+            border: 2px solid #f39c12; 
+            background: #fffdf0; 
+            color: #f39c12; 
+        }
+
+        .q-num.answered { 
+            background-color: var(--correct-green); 
+            color: white; 
+            border: none; 
+        }
         
-        .content { flex: 1; padding: 20px; background: rgba(255, 255, 255, 0.85); overflow-y: auto; }
+        .content { 
+            flex: 1; 
+            padding: 20px; 
+            background: rgba(255, 255, 255, 0.85); 
+            overflow-y: auto; 
+        }
+
         .question-card {
             background: white;
             padding: 25px;
@@ -126,10 +162,24 @@
             display: flex; 
             align-items: center; 
         }
-        .option.selected { border: 2px solid var(--primary-color); background-color: #f0fafa; }
 
-        .btn { padding: 12px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-save { background-color: var(--primary-color); color: white; }
+        .option.selected { 
+            border: 2px solid var(--primary-color); 
+            background-color: #f0fafa; 
+        }
+
+        .btn { 
+            padding: 12px 30px; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+        }
+
+        .btn-save { 
+            background-color: var(--primary-color); 
+            color: white; 
+        }
 
         footer { 
             background-color: var(--primary-color); 
@@ -185,67 +235,71 @@
     
     emailjs.init(PUBLIC_KEY);
 
-    // تم تحديث الأسئلة بناءً على مدخلاتك الجديدة
+    const _0x_aK = [2,0,0,0,3,0,2,2,2,1,1,2,3,1,0,0,2,1,1,2,2,1,3,3,3,3,0,2,3,2];
     const questions = [
-        // القسم الكمي
-        { q: "سؤال 1 (كمي)", options: ["×", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 2 (كمي)", options: ["س²", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 3 (كمي)", options: ["3", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 4 (كمي)", options: ["5000", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 5 (كمي)", options: ["المعطيات غير كافية", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 6 (كمي)", options: ["المعطيات غير كافية", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 7 (كمي)", options: ["٨", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 8 (كمي)", options: ["٦", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 9 (كمي)", options: ["\\frac{23}{36}", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 10 (كمي)", options: ["٢", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 11 (كمي)", options: ["٥", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 12 (كمي)", options: ["خالد", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 13 (كمي)", options: ["٦", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 14 (كمي)", options: ["١٥٠كلم", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 15 (كمي)", options: ["٢٣٥٠", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        
-        // القسم اللفظي
-        { q: "سؤال 1 (لفظي)", options: ["مصافحة: سلام", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 2 (لفظي)", options: ["توكل :تردد", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 3 (لفظي)", options: ["مكتبه : قراءه", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 4 (لفظي)", options: ["بالعدل-بالتواضع", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 5 (لفظي)", options: ["المعده-الدواء", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 6 (لفظي)", options: ["خفه-قوه", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 7 (لفظي)", options: ["اختفاء", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 8 (لفظي)", options: ["ارقد", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 9 (لفظي)", options: ["مشتبهة", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 10 (لفظي)", options: ["وجود بدائل صناعية أخرى ومع ذلك هم لا يستخدمونها", "كثرة وتعدد وسائل الترفيه في المملكة", "وجود بدائل كثيرة للحطب توفرها الدولة", "خيار آخر"] },
-        { q: "سؤال 11 (لفظي)", options: ["ترشيد استهلاك الحطب", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 12 (لفظي)", options: ["وضع قوانين للحد من قطع الأشجار", "حل مشكلة حد الحطب", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 13 (لفظي)", options: ["مطالعه", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 14 (لفظي)", options: ["مناوله", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] },
-        { q: "سؤال 15 (لفظي)", options: ["مصباح", "خيارات أخرى...", "خيارات أخرى...", "خيارات أخرى..."] }
+        { q: "إذا كان: 3س³ - 23 - 2س = 3س³ - 29 + 2س² ، أي مما يلي أحد جذري المعادلة؟", options: ["6", "5", "3", "1"] },
+        { q: "(5^7 + 5^8) / 5^7 = ........", options: ["6", "7", "8", "9"] },
+        { q: "4 ⬜ 2 = 6 ⬜ 2 ، ما هي العمليات الحسابية المناسبة على التوالي لكي تصبح العلاقة صحيحة؟", options: ["× ، ×", "÷ ، +", "+ ، -", "- ، +"] },
+        { q: "إذا كان: س > ص > 1 ، قارن بين: القيمة الأولى (س - 1) / ص ، القيمة الثانية (س - 1) / س", options: ["القيمة الأولى أكبر", "القيمة الثانية أكبر", "القيمتان متساويتان", "المعطيات غير كافية"] },
+        { q: "إذا كان س + (1/س) = 3 + (1/3) ، قارن بين: القيمة الأولى (س) ، القيمة الثانية (2)", options: ["القيمة الأولى أكبر", "القيمة الثانية أكبر", "القيمتان متساويتان", "المعطيات غير كافية"] },
+        { q: "إذا كان 5 ، 2 ، 7 من عوامل العدد س ، أي مما يلي يقبل القسمة على 70؟", options: ["س²", "س² + 100", "س² + 1000", "س + 100"] },
+        { q: "اختبار مدته 90 دقيقة به عدد من الأقسام وبين كل قسمين 5 دقائق راحة، فإذا بدأ الاختبار الساعة 8:00 وانتهى الساعة 9:55 ، كم عدد أقسام الاختبار؟", options: ["7", "6", "5", "4"] },
+        { q: "أعطى أحمد لأخته ربع ما معه ثم صرف نصف ما تبقى معه وتبقى معه 3 ريال، كم كان معه؟", options: ["12", "9", "8", "6"] },
+        { q: "في جامعة عدد الطالبات ضعف عدد الطلاب، تم تكريم 1/8 الطالبات، و 1/9 الطلاب، ما نسبة الذين لم يكرموا؟", options: ["35/72", "32/36", "23/36", "1/24"] },
+        { q: "10 أشخاص في طابور، خالد ترتيبه الخامس من اليمين وأحمد ترتيبه الثامن من اليسار، كم شخص يقف بين أحمد وخالد؟", options: ["1", "2", "4", "8"] },
+        { q: "إذا كان طول أحمد مثلي طول خالد، طول خالد 70٪ من طول سعد، طول هادي 120٪ من طول أحمد، ما أقصر شخص فيهم؟", options: ["أحمد", "خالد", "سعد", "هادي"] },
+        { q: "محل للقماش يبيع القطعة بـ 500 ريال وكل 3 قطع بخصم 10٪، كم تدفع عند شراء 5 قطع؟", options: ["2200", "2250", "2350", "2375"] },
+        { q: "3 مدن رسمت على خريطة كرؤوس مثلث متطابق الأضلاع محيطه = 9 سم، إذا كان مقياس الرسم = 1 سم : 50 كلم، ما المسافة بين كل مدينة وأخرى؟", options: ["450 كلم", "300 كلم", "200 كلم", "150 كلم"] },
+        { q: "قطعة أرض مستطيلة الشكل طولها 150 م وعرضها 100 م، و1 كيلوجرام من بذور القمح تغطي 15 م² من الأرض، وسعر الكيلوجرام من البذور 5 ريال، كم التكلفة لتغطية الأرض كاملة؟", options: ["2500", "5000", "7500", "10000"] },
+        { q: "80 بلاطة مربعة متطابقة، محيط البلاطة = 1 متر. ما مساحة البلاط الكلي بالمتر المربع؟", options: ["5", "10", "25", "50"] },
+        { q: "التناظر اللفظي - مطر:نبات", options: ["عقل:علم", "جهل فشل", "مدرسة:اجتهاد", "شهادة:نجاح"] },
+        { q: "التناظر اللفظي - عبارة:معنى", options: ["طهارة:صلاة", "سفرة:طاولة", "طاعة:ثواب"] },
+        { q: "التناظر اللفظي - ورق : حلي", options: ["ماء : ارتواء", "قمح : خبز", "زهر : رحيق", "عسل : نحل"] },
+        { q: "التعليم الإلكتروني عن طريق.....من الوسائل....في هذا العصر.", options: ["الحاسب-التقليدية", "الإنترنت-التقنية", "المذياع-الحديثة", "الإنترنت-التقليدية"] },
+        { q: "إذا أمكنك توصيل فكرتك في.....لا تجعلها في......", options: ["جملة-حروف", "كتاب-صفحات", "كلمة-صفحة", "صفحة-كتاب"] },
+        { q: "كل شيء ........ تنساه إلا ما ........ .", options: ["أدرسته - أتقنته", "قرأته - حفظته", "سمعته - فهمته", "تعلمته - أتقنته"] },
+        { q: "الخطأ السياقي - لا يتحقق الوفاء الا بالغدر، وإذا كان الغدر موجوداً فإن ثقة الناس ببعضهم عجز.", options: ["الغدر", "ببعضهم", "الوفاء", "فالثقة"] },
+        { q: "الخطأ السياقي - معلم نفسه ومؤدبها أحق بالإجلال من معلم ذاته ومؤدبها.", options: ["نفسه", "أحق", "بالإستحقاق", "ذاته"] },
+        { q: "الخطأ السياقي - الحقيقة بنت البحث وتفضل في يد المناظرات.", options: ["الحقيقة", "البحث", "تفضل", "يد"] },
+        { q: "المفردة الشاذة - حدد الكلمة المختلفة:", options: ["شعر", "قصيدة", "ديوان", "قصة"] },
+        { q: "المفردة الشاذة - حدد الكلمة المختلفة:", options: ["محسن", "كريم", "شجاع", "سخي"] },
+        { q: "المفردة الشاذة - حدد الكلمة المختلفة:", options: ["الذخيرة", "القنبلة", "البندقية", "الصاروخ"] },
+        { q: "المقصود بـ ( التنزه في عقول الناس ) هو:", options: ["مرافقة البسطاء", "التحدث مع الناس", "قراءة ما يكتبونه"] },
+        { q: "من خلال النص (توانيت في أوان التعلم...) سبب الأنفة هو:", options: ["التكبر", "العلم الغزير", "احتقار المسألة", "الحياء"] },
+        { q: "(إني ميت وأنهم لميتون) تعتبر:", options: ["من الفأل", "امتثال", "اقتباس", "يأس"] }
     ];
 
-    let currentIdx = 0;
-    let userAnswers = new Array(30).fill(null);
-    let userName = "";
+    let currentIdx = 0; 
+    let userAnswers = new Array(30).fill(null); 
+    let userName = ""; 
     let timerInterval;
 
     function startQuiz() {
         const input = document.getElementById('name-input');
-        if (input.value.trim().length < 3) { alert("أدخل اسمك الثلاثي"); return; }
+        if (input.value.trim().length < 3) { 
+            alert("أدخل اسمك الثلاثي"); 
+            return; 
+        }
         userName = input.value.trim();
-        document.getElementById('name-screen').style.display = 'none';
-        document.getElementById('main-header').style.display = 'flex';
-        document.getElementById('app-body').style.display = 'flex';
+        document.getElementById('name-screen').style.display = 'none'; 
+        document.getElementById('main-header').style.display = 'flex'; 
+        document.getElementById('app-body').style.display = 'flex'; 
         document.getElementById('main-footer').style.display = 'block';
         document.getElementById('user-display').innerText = userName;
         const endTime = Date.now() + (30 * 60 * 1000);
-        renderQuestion();
+        renderQuestion(); 
         startTimer(endTime);
     }
 
     function startTimer(endTime) {
         timerInterval = setInterval(() => {
             const distance = endTime - Date.now();
-            if (distance <= 0) { clearInterval(timerInterval); finishQuiz(); return; }
-            let m = Math.floor(distance / 60000);
+            if (distance <= 0) { 
+                clearInterval(timerInterval); 
+                finishQuiz(); 
+                return; 
+            }
+            let m = Math.floor(distance / 60000); 
             let s = Math.floor((distance % 60000) / 1000);
             document.getElementById('timer-box').innerText = `${m}:${s < 10 ? '0'+s : s}`;
         }, 1000);
@@ -255,72 +309,98 @@
         const q = questions[currentIdx];
         document.getElementById('section-title').innerText = currentIdx < 15 ? "القسم الكمي" : "القسم اللفظي";
         document.getElementById('q-text').innerText = `س${currentIdx + 1}: ${q.q}`;
-        const container = document.getElementById('options-container');
-        container.innerHTML = '';
+        const container = document.getElementById('options-container'); 
+        container.innerHTML = ''; 
         const prefixes = ["أ", "ب", "ج", "د"];
+        
         q.options.forEach((opt, i) => {
-            const div = document.createElement('div');
+            const div = document.createElement('div'); 
             div.className = `option ${userAnswers[currentIdx] === i ? 'selected' : ''}`;
             div.innerHTML = `<span style="background:var(--primary-color); color:white; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; margin-left:10px; font-size:12px;">${prefixes[i]}</span> ${opt}`;
-            div.onclick = () => { userAnswers[currentIdx] = i; renderQuestion(); updateStats(); };
+            div.onclick = () => { 
+                userAnswers[currentIdx] = i; 
+                renderQuestion(); 
+                updateStats(); 
+            }; 
             container.appendChild(div);
         });
         updateGrid();
     }
 
     function updateGrid() {
-        const grid = document.getElementById('q-grid');
+        const grid = document.getElementById('q-grid'); 
         grid.innerHTML = '';
         questions.forEach((_, i) => {
-            const d = document.createElement('div');
-            d.className = `q-num ${(userAnswers[i] !== null) ? 'answered' : ''} ${i === currentIdx ? 'active' : ''}`;
+            const d = document.createElement('div'); 
+            d.className = `q-num ${(userAnswers[i] !== null) ? 'answered' : ''} ${i === currentIdx ? 'active' : ''}`; 
             d.innerText = i + 1;
-            d.onclick = () => { currentIdx = i; renderQuestion(); };
+            d.onclick = () => { 
+                currentIdx = i; 
+                renderQuestion(); 
+            }; 
             grid.appendChild(d);
         });
     }
 
-    function updateStats() {
-        const count = userAnswers.filter(a => a !== null).length;
-        document.getElementById('top-answered').innerText = `المجابة: ${count} / 30`;
+    function updateStats() { 
+        const count = userAnswers.filter(a => a !== null).length; 
+        document.getElementById('top-answered').innerText = `المجابة: ${count} / 30`; 
     }
 
-    function nextQuestion() {
-        if (currentIdx < 29) { currentIdx++; renderQuestion(); }
-        else { if(confirm("هل تريد تسليم الاختبار؟")) finishQuiz(); }
+    function nextQuestion() { 
+        if (currentIdx < 29) { 
+            currentIdx++; 
+            renderQuestion(); 
+        } else { 
+            if(confirm("هل تريد تسليم الاختبار؟")) finishQuiz(); 
+        } 
     }
-
-    function prevQuestion() { if (currentIdx > 0) { currentIdx--; renderQuestion(); } }
+    
+    function prevQuestion() { 
+        if (currentIdx > 0) { 
+            currentIdx--; 
+            renderQuestion(); 
+        } 
+    }
 
     function finishQuiz() {
-        clearInterval(timerInterval);
-        let details = "";
+        clearInterval(timerInterval); 
+        let correctCount = 0; 
+        let details = ""; 
         const prefixes = ["أ", "ب", "ج", "د"];
-
-        questions.forEach((q, i) => {
-            details += `س${i+1}: (${prefixes[userAnswers[i]] || 'لم يحل'})\n`;
+        
+        questions.forEach((q, i) => { 
+            const isCorrect = userAnswers[i] === _0x_aK[i]; 
+            if (isCorrect) correctCount++; 
+            details += `س${i+1}: (${prefixes[userAnswers[i]] || 'لم يحل'}) | ${isCorrect ? '✅' : '❌'}\n`; 
         });
-
+        
+        const scorePercent = Math.round((correctCount / 30) * 100);
         document.getElementById('sidebar').style.display = 'none';
         document.getElementById('main-content').innerHTML = `
             <div class='question-card' style='text-align:center;'>
-                <h2>تم التسليم!</h2>
+                <h2>تم التسليم!</h2> 
                 <p>الطالب: ${userName}</p>
-                <p id="mail-status" style="margin-top:15px; color:orange; font-weight:bold;">جاري إرسال الإجابات للإدارة...</p>
+                <div style='background:#f1f1f1; padding:20px; border-radius:10px;'>
+                    <p>درجتك: ${correctCount} من 30</p> 
+                    <p style='font-size:1.5em; font-weight:bold; color:var(--primary-color);'>%${scorePercent}</p>
+                </div>
+                <p id="mail-status" style="margin-top:15px; color:orange; font-weight:bold;">جاري إرسال النتيجة للإدارة...</p>
             </div>`;
-
-        emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-            user_name: userName,
-            user_details: details
+            
+        emailjs.send(SERVICE_ID, TEMPLATE_ID, { 
+            user_name: userName, 
+            user_score: scorePercent + "%", 
+            user_details: details 
         }).then(
-            function() {
-                document.getElementById('mail-status').innerText = "تم إرسال الإجابات بنجاح ✅";
-                document.getElementById('mail-status').style.color = "green";
+            function() { 
+                document.getElementById('mail-status').innerText = "تم إرسال النتيجة بنجاح ✅"; 
+                document.getElementById('mail-status').style.color = "green"; 
             },
-            function(error) {
-                alert("فشل الإرسال: " + JSON.stringify(error));
-                document.getElementById('mail-status').innerText = "فشل الإرسال ❌";
-                document.getElementById('mail-status').style.color = "red";
+            function(error) { 
+                alert("فشل الإرسال: " + JSON.stringify(error)); 
+                document.getElementById('mail-status').innerText = "فشل الإرسال ❌"; 
+                document.getElementById('mail-status').style.color = "red"; 
             }
         );
     }
